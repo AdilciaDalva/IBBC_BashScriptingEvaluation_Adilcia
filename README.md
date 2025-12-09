@@ -5,14 +5,16 @@ Este projeto teve como objetivo desenvolver um pipeline automatizado e reprodut�
 ## Estrutura do projeto
 
 ```bash
-Project_ibbc_Adilcia
+Project_ibbc_Adilcia/
+├── config.sh
 ├── 01_setup_project.sh
 ├── 02_run_pipeline.sh
 ├── 03_extra_utility.sh
-├── raw_data/              
+├── raw_data/               
 ├── results/
 │   ├── clean/
 │   ├── qc/
+│   ├── logs/
 │   ├── organelle/
 └── README.md
 ```
