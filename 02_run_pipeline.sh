@@ -73,7 +73,7 @@ done
 
 
 # =======================================
-# MULTIQC FINAL
+# MULTIQC FINAL (Opcional)
 # =======================================
 echo "MULTIQC → results/multiqc_report/"
 multiqc results -o results/multiqc_report/ \
