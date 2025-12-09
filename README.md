@@ -1,4 +1,4 @@
-# IBBC Bash Scripting Evaluation – Mestrado Bioinformática e Biologia Computacional
+# IBBC Bash Scripting Evaluation 
 
 Pipeline automatizado para processamento de dados paired-end, usando:
 - Fastp — limpeza e filtragem de leituras
