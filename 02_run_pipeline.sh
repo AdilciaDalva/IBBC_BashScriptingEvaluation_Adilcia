@@ -1,58 +1,82 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-CONFIG="${1:-config.sh}"
+# ===========================
+# 02_run_pipeline.sh
+# Pipeline principal IBBC
+# ===========================
 
-if [[ ! -f "$CONFIG" ]]; then
-  echo "Configuração '$CONFIG' não encontrada."
-  exit 1
-fi
-
+CONFIG=$1
 source "$CONFIG"
 
-TIMESTAMP() { date +"%Y-%m-%d %H:%M:%S"; }
+MASTER_LOG="results/logs/pipeline_master.log"
+mkdir -p results/logs
 
-echo "[$(TIMESTAMP)] Início do pipeline" | tee -a "$MASTER_LOG"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] Início do pipeline" | tee -a "$MASTER_LOG"
 
-shopt -s nullglob
-R1_FILES=(${RAW_DIR}/*_R1*.fastq.gz)
-shopt -u nullglob
 
-if [[ ${#R1_FILES[@]} -eq 0 ]]; then
-  echo "Nenhum ficheiro R1 encontrado em $RAW_DIR"
-  exit 1
-fi
-
-for r1 in "${R1_FILES[@]}"; do
-  SAMPLE=$(basename "$r1" | sed -E 's/_R1.*//')
-  R2="${RAW_DIR}/${SAMPLE}_R2.fastq.gz"
-
-  if [[ ! -f "$R2" ]]; then
-    echo "⚠️  Sem ficheiro par R2 para $SAMPLE → ignorar"
-    continue
-  fi
-
-  echo "[$(TIMESTAMP)] PROCESSING $SAMPLE" | tee -a "$MASTER_LOG"
-
-  OUT_R1="${CLEAN_DIR}/${SAMPLE}_R1.clean.fastq.gz"
-  OUT_R2="${CLEAN_DIR}/${SAMPLE}_R2.clean.fastq.gz"
-
-  echo "FASTP → $SAMPLE"
-  $FASTP_CMD -i "$r1" -I "$R2" -o "$OUT_R1" -O "$OUT_R2" -w "$THREADS" \
-    >> "$LOG_DIR/${SAMPLE}.fastp.log" 2>&1
-
-  echo "FASTQC → $SAMPLE"
-  $FASTQC_CMD "$OUT_R1" "$OUT_R2" -o "$QC_DIR" -t "$THREADS" \
-    >> "$LOG_DIR/${SAMPLE}.fastqc.log" 2>&1
-
-  echo "GETORGANELLE → $SAMPLE"
-  $GETORGANELLE_CMD -1 "$OUT_R1" -2 "$OUT_R2" -o "$ORG_DIR/$SAMPLE" -t "$THREADS" -F "$GETO_DB" \
-    > "$ORG_DIR/$SAMPLE/getorganelle.stdout" 2> "$ORG_DIR/$SAMPLE/getorganelle.stderr"
-
-  echo "[$(TIMESTAMP)] DONE $SAMPLE" | tee -a "$MASTER_LOG"
+# =======================================
+# DETETAR AMOSTRAS AUTOMATICAMENTE
+# =======================================
+SAMPLES=()
+for R1 in raw_data/*_R1.fastq.gz; do
+    SAMPLE=$(basename "$R1" | sed 's/_R1.fastq.gz//')
+    SAMPLES+=("$SAMPLE")
 done
 
-echo "MultiQC → a gerar relatório..."
-$MULTIQC_CMD "$OUTDIR" -o "${OUTDIR}/multiqc_report" >> "$MASTER_LOG" 2>&1
 
-echo "[$(TIMESTAMP)] PIPELINE FINALIZADO" | tee -a "$MASTER_LOG"
+# =======================================
+# SUPORTAR FILTRAGEM POR ARGUMENTO
+# ./02_run_pipeline.sh config.sh --samples "SCw13_R1.fastq.gz"
+# =======================================
+if [[ "$2" == "--samples" ]]; then
+    SELECTED=$(basename "$3" | sed 's/_R1.fastq.gz//')
+    SAMPLES=("$SELECTED")
+fi
+
+
+# =======================================
+# LOOP DO PIPELINE
+# =======================================
+for SAMPLE in "${SAMPLES[@]}"; do
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] PROCESSING $SAMPLE" | tee -a "$MASTER_LOG"
+
+    R1="raw_data/${SAMPLE}_R1.fastq.gz"
+    R2="raw_data/${SAMPLE}_R2.fastq.gz"
+
+    OUT_R1="results/clean/${SAMPLE}_R1.clean.fastq.gz"
+    OUT_R2="results/clean/${SAMPLE}_R2.clean.fastq.gz"
+
+    mkdir -p results/clean results/qc results/organelle/${SAMPLE}
+
+    # FASTP
+    echo "FASTP → $SAMPLE"
+    fastp -i "$R1" -I "$R2" \
+          -o "$OUT_R1" -O "$OUT_R2" \
+          -w "$THREADS" \
+          > "results/logs/${SAMPLE}_fastp.log" 2>&1
+
+    # FASTQC
+    echo "FASTQC → $SAMPLE"
+    fastqc "$OUT_R1" "$OUT_R2" \
+           -o results/qc/ \
+           >> "results/logs/${SAMPLE}_fastqc.log" 2>&1
+
+    # GETORGANELLE
+    echo "GETORGANELLE → $SAMPLE"
+    getorganelle_from_reads.py -1 "$OUT_R1" -2 "$OUT_R2" \
+        -o "results/organelle/${SAMPLE}" \
+        -t "$THREADS" -F "$GETO_DB" \
+        > "results/logs/${SAMPLE}_getorganelle.log" 2>&1
+
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] DONE $SAMPLE" | tee -a "$MASTER_LOG"
+done
+
+
+# =======================================
+# MULTIQC FINAL
+# =======================================
+echo "MULTIQC → results/multiqc_report/"
+multiqc results -o results/multiqc_report/ \
+       >> "$MASTER_LOG" 2>&1
+
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] PIPELINE FINALIZADO" | tee -a "$MASTER_LOG"
