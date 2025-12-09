@@ -34,23 +34,27 @@ Project_ibbc_Adilcia/
 
 ## Execução do pipeline no terminal
 1. Entrar na pasta do projeto:
-   ```bash cd Project_ibbc_Adilcia ```
+   ```bash
+   cd Project_ibbc_Adilcia
+   ```
 3. Configuração do ambiente e ativação do ambiente conda:
+   ```bash
    conda create -n ibbc_eval -c conda-forge -c bioconda fastp fastqc getorganelle
    conda activate ibbc_eval
-4. Criação de diretória para FASTQ:
+   ```
+5. Criação de diretória para FASTQ:
    mkdir raw_data
-5. Verificação das amostras:
+6. Verificação das amostras:
    ls raw_data/
-6. Preparação do projeto:
+7. Preparação do projeto:
    ./01_setup_project.sh config.sh
-7. Execução do pipeline:
+8. Execução do pipeline:
    ./02_run_pipeline.sh config.sh
-8. Verificação de resultados*:
+9. Verificação de resultados*:
     ls results/clean/
     ls results/qc/
     ls results/organelle/
-9. Obtenção do resumo:
+10. Obtenção do resumo:
    ./03_extra_utility.sh config.sh
    column -t -s $'\t' results/summary_table.tsv
 
