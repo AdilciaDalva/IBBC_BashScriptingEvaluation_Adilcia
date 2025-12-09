@@ -37,26 +37,38 @@ Project_ibbc_Adilcia/
    ```bash
    cd Project_ibbc_Adilcia
    ```
-3. Configuração do ambiente e ativação do ambiente conda:
+2. Configuração do ambiente e ativação do ambiente conda:
    ```bash
    conda create -n ibbc_eval -c conda-forge -c bioconda fastp fastqc getorganelle
    conda activate ibbc_eval
    ```
-5. Criação de diretória para FASTQ:
+3. Criação de diretória para FASTQ:
+   ```bash
    mkdir raw_data
-6. Verificação das amostras:
+   ```
+4. Verificação das amostras:
+   ```bash
    ls raw_data/
-7. Preparação do projeto:
+   ```
+5. Preparação do projeto:
+   ```bash
    ./01_setup_project.sh config.sh
-8. Execução do pipeline:
+   ````
+6. Execução do pipeline:
+    ```bash
    ./02_run_pipeline.sh config.sh
-9. Verificação de resultados*:
+    ```
+7. Verificação de resultados*:
+    ```bash
     ls results/clean/
     ls results/qc/
     ls results/organelle/
-10. Obtenção do resumo:
+    ```
+8. Obtenção do resumo:
+   ```bash
    ./03_extra_utility.sh config.sh
    column -t -s $'\t' results/summary_table.tsv
+    ```
 
 ## *Outputs principais
 - FASTQ limpos → results/clean/
