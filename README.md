@@ -5,8 +5,7 @@ Este projeto teve como objetivo desenvolver um pipeline automatizado e reprodut�
 ## Estrutura do projeto
 
 ```bash
-Project_ibbc_Adilcia/
-├── config.sh
+Project_ibbc_Adilcia
 ├── 01_setup_project.sh
 ├── 02_run_pipeline.sh
 ├── 03_extra_utility.sh
@@ -30,7 +29,6 @@ Project_ibbc_Adilcia/
   Processamento/Deteção automático das amostras → Fastp → FastQC → GetOrganelle
 - 03_extra_utility.sh: gera uma tabela final com informação comparativa e sucesso da montagem.
   Output: results/summary_table.tvs
-- config.sh: define parâmetros usados por todos os scripts.
 
 ## Execução do pipeline no terminal
 1. Entrar na pasta do projeto:
@@ -52,11 +50,11 @@ Project_ibbc_Adilcia/
    ```
 5. Preparação do projeto:
    ```bash
-   ./01_setup_project.sh config.sh
+   ./01_setup_project.sh
    ````
 6. Execução do pipeline:
     ```bash
-   ./02_run_pipeline.sh config.sh
+   ./02_run_pipeline.sh
     ```
 7. Verificação de resultados*:
     ```bash
@@ -66,7 +64,7 @@ Project_ibbc_Adilcia/
     ```
 8. Obtenção do resumo:
    ```bash
-   ./03_extra_utility.sh config.sh
+   ./03_extra_utility.sh
    column -t -s $'\t' results/summary_table.tsv
     ```
 
