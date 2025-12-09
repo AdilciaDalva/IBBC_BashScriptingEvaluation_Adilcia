@@ -34,7 +34,7 @@ Project_ibbc_Adilcia/
 
 ## Execução do pipeline no terminal
 1. Entrar na pasta do projeto:
-   ```bash cd Project_ibbc_Adilcia ``
+   ```bash cd Project_ibbc_Adilcia ```
 3. Configuração do ambiente e ativação do ambiente conda:
    conda create -n ibbc_eval -c conda-forge -c bioconda fastp fastqc getorganelle
    conda activate ibbc_eval
