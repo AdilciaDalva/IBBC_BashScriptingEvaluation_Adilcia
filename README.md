@@ -1,6 +1,6 @@
 # IBBC Bash Scripting Evaluation 
 
-Este projeto teve como objetivo desenvolver um pipeline automatizado e reprodutível para processamento de dados de sequenciação paired-end.
+Este projeto teve como objetivo desenvolver um pipeline automatizado e reprodutível para processamento de dados de sequenciação paired-end (amostras ITl14 e ScW13).
 
 ## Estrutura do projeto
 
