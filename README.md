@@ -31,6 +31,7 @@ Project_ibbc_Adilcia/
   Processamento/Deteção automático das amostras → Fastp → FastQC → GetOrganelle
 - 03_extra_utility.sh: gera uma tabela final com informação comparativa e sucesso da montagem.
   Output: results/summary_table.tvs
+- config.sh: cérebro da configuração, basicamente defime todos os parâmetros usados por todos os scripts
 
 ## Execução do pipeline no terminal
 1. Entrar na pasta do projeto:
@@ -63,11 +64,12 @@ Project_ibbc_Adilcia/
     ls results/clean/
     ls results/qc/
     ls results/organelle/
+    ls results/logs
     ```
 8. Obtenção do resumo:
    ```bash
-   ./03_extra_utility.sh
-   column -t -s $'\t' results/summary_table.tsv
+   ./03_extra_utility.sh config.sh
+   cat results/summary_table.tsv
     ```
 
 ## *Outputs principais
